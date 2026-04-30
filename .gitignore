@@ -1,0 +1,13 @@
+# Ignorar la carpeta de herramientas/IA
+IATools/
+
+# Carpetas de compilación de .NET
+bin/
+obj/
+
+# Archivos temporales e IDE
+.vs/
+*.user
+*.suo
+.idea/
+*.vscode/
