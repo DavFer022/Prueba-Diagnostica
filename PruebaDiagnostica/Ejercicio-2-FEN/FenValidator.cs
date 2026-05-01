@@ -36,10 +36,26 @@ public class FenValidator
         resultado = null;
 
         // ── Campo 0: dividir en exactamente 6 partes ──────────────────────
-        string[] partes = input.Split(' ');
+        string[] partes = input.Split(' ', StringSplitOptions.RemoveEmptyEntries);
         if (partes.Length != 6)
         {
-            error = $"Se esperaban 6 campos separados por espacio, se encontraron {partes.Length}.";
+            if (partes.Length < 6)
+            {
+                var camposFaltantes = new List<string>();
+                if (partes.Length < 1) camposFaltantes.Add("Tablero (ej. rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR)");
+                if (partes.Length < 2) camposFaltantes.Add("Turno (ej. w o b)");
+                if (partes.Length < 3) camposFaltantes.Add("Enroque (ej. KQkq o -)");
+                if (partes.Length < 4) camposFaltantes.Add("Captura al paso (ej. e3 o -)");
+                if (partes.Length < 5) camposFaltantes.Add("Semi-movimientos (ej. 0)");
+                if (partes.Length < 6) camposFaltantes.Add("Movimiento completo (ej. 1)");
+
+                error = $"Se esperaban 6 campos, pero se encontraron {partes.Length}.\n\nFaltan los siguientes campos:\n" + 
+                        string.Join("\n", camposFaltantes.Select(c => $"• {c}"));
+            }
+            else
+            {
+                error = $"Se esperaban 6 campos separados por espacio, pero se encontraron {partes.Length}.";
+            }
             return false;
         }
 

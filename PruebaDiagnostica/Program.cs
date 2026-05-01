@@ -105,50 +105,66 @@ static void EjercicioFEN()
 {
     MostrarTitulo("Ejercicio 2", "Validador de Notación FEN", Color.MediumOrchid);
 
-    // ── Entrada del usuario ──────────────────────────────────
-    string fen = AnsiConsole.Prompt(
-        new TextPrompt<string>("[bold]Ingresa una cadena FEN:[/]")
-            .PromptStyle("magenta")
-            .DefaultValue("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
-            .AllowEmpty());
-
-    AnsiConsole.WriteLine();
-
-    var validator = new FenValidator();
-    bool valido = validator.TryParse(fen, out FenPosition? pos, out string error);
-
-    // ── FEN ingresado (en panel) ─────────────────────────────
-    AnsiConsole.Write(new Panel($"[italic]{Markup.Escape(fen)}[/]")
-        .Header("[bold]Cadena analizada[/]")
-        .Border(BoxBorder.Rounded)
-        .BorderColor(Color.MediumOrchid));
-
-    AnsiConsole.WriteLine();
-
-    if (valido && pos is not null)
+    bool continuar = true;
+    while (continuar)
     {
-        // Tabla de campos válidos
-        var tabla = new Table()
-            .Border(TableBorder.Rounded)
-            .BorderColor(Color.Green)
-            .Title("[bold green]✓ FEN VÁLIDO[/]")
-            .AddColumn(new TableColumn("[bold]Campo[/]"))
-            .AddColumn(new TableColumn("[bold]Valor[/]"));
+        // ── Entrada del usuario ──────────────────────────────────
+        string fen = AnsiConsole.Prompt(
+            new TextPrompt<string>("[bold]Ingresa una cadena FEN:[/]")
+                .PromptStyle("magenta")
+                .DefaultValue("rnbqkbnr/pppppppp/8/8/8/8/PPPPPPPP/RNBQKBNR w KQkq - 0 1")
+                .AllowEmpty());
 
-        tabla.AddRow("Turno", pos.Turno == 'w' ? "[white]Blancas[/]" : "[grey]Negras[/]");
-        tabla.AddRow("Enroque", $"[cyan]{Markup.Escape(pos.Enroque)}[/]");
-        tabla.AddRow("Captura al paso", $"[cyan]{Markup.Escape(pos.CapturaAlPaso)}[/]");
-        tabla.AddRow("Semi-movimientos", $"[yellow]{pos.SemiMovimientos}[/]");
-        tabla.AddRow("Movimiento", $"[yellow]{pos.Movimiento}[/]");
+        AnsiConsole.WriteLine();
 
-        AnsiConsole.Write(tabla);
-    }
-    else
-    {
-        AnsiConsole.Write(new Panel($"[red bold]{Markup.Escape(error)}[/]")
-            .Header("[bold red]✗ FEN INVÁLIDO[/]")
+        var validator = new FenValidator();
+        bool valido = validator.TryParse(fen, out FenPosition? pos, out string error);
+
+        // ── FEN ingresado (en panel) ─────────────────────────────
+        AnsiConsole.Write(new Panel($"[italic]{Markup.Escape(fen)}[/]")
+            .Header("[bold]Cadena analizada[/]")
             .Border(BoxBorder.Rounded)
-            .BorderColor(Color.Red));
+            .BorderColor(Color.MediumOrchid));
+
+        AnsiConsole.WriteLine();
+
+        if (valido && pos is not null)
+        {
+            // Tabla de campos válidos
+            var tabla = new Table()
+                .Border(TableBorder.Rounded)
+                .BorderColor(Color.Green)
+                .Title("[bold green]✓ FEN VÁLIDO[/]")
+                .AddColumn(new TableColumn("[bold]Campo[/]"))
+                .AddColumn(new TableColumn("[bold]Valor[/]"));
+
+            tabla.AddRow("Turno", pos.Turno == 'w' ? "[white]Blancas[/]" : "[grey]Negras[/]");
+            tabla.AddRow("Enroque", $"[cyan]{Markup.Escape(pos.Enroque)}[/]");
+            tabla.AddRow("Captura al paso", $"[cyan]{Markup.Escape(pos.CapturaAlPaso)}[/]");
+            tabla.AddRow("Semi-movimientos", $"[yellow]{pos.SemiMovimientos}[/]");
+            tabla.AddRow("Movimiento", $"[yellow]{pos.Movimiento}[/]");
+
+            AnsiConsole.Write(tabla);
+            continuar = false; // Sale del bucle de validación con éxito
+        }
+        else
+        {
+            AnsiConsole.Write(new Panel($"[red bold]{Markup.Escape(error)}[/]")
+                .Header("[bold red]✗ FEN INVÁLIDO[/]")
+                .Border(BoxBorder.Rounded)
+                .BorderColor(Color.Red));
+
+            AnsiConsole.WriteLine();
+            if (!AnsiConsole.Confirm("[yellow]¿Deseas intentar de nuevo?[/]", defaultValue: true))
+            {
+                continuar = false;
+            }
+            else
+            {
+                AnsiConsole.Clear();
+                MostrarTitulo("Ejercicio 2", "Validador de Notación FEN", Color.MediumOrchid);
+            }
+        }
     }
 }
 
@@ -229,6 +245,33 @@ static void EjercicioCollatz()
     resumen.AddRow("[bold]Con más pasos[/]", $"[cyan]n = {maxPasos.NumeroInicial}[/]  → [green]{maxPasos.Pasos} pasos[/]");
 
     AnsiConsole.Write(resumen);
+
+    AnsiConsole.WriteLine();
+    AnsiConsole.MarkupLine("[grey]Presiona [bold white]V[/] para ver todos los resultados, o cualquier otra tecla para continuar...[/]");
+    
+    var keyInfo = Console.ReadKey(intercept: true);
+    if (keyInfo.Key == ConsoleKey.V)
+    {
+        AnsiConsole.Clear();
+        MostrarTitulo("Ejercicio 3", "Conjetura de Collatz (Completo)", Color.Gold1);
+
+        var tablaCompleta = new Table()
+            .Border(TableBorder.Rounded)
+            .BorderColor(Color.Gold1)
+            .Title($"[bold gold1]Intervalo [[{p}, {q}]][/]  [grey](Todos los {resultados.Count} números)[/]")
+            .AddColumn(new TableColumn("[bold]n[/]").RightAligned())
+            .AddColumn(new TableColumn("[bold]Pasos[/]").RightAligned())
+            .AddColumn(new TableColumn("[bold]Secuencia (máx. 12 valores)[/]"));
+
+        foreach (var r in resultados)
+        {
+            string sec = string.Join(" [grey]→[/] ", r.Secuencia.Take(12).Select(v => $"[yellow]{v}[/]"));
+            if (r.Secuencia.Count > 12) sec += " [grey]→ ...[/]";
+            tablaCompleta.AddRow($"[cyan]{r.NumeroInicial}[/]", $"[green]{r.Pasos}[/]", sec);
+        }
+
+        AnsiConsole.Write(tablaCompleta);
+    }
 }
 
 // ─── Helpers de presentación ──────────────────────────────────
