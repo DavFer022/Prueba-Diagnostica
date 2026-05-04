@@ -8,25 +8,31 @@ Este repositorio contiene la implementación en C# (.NET 10) de los tres ejercic
 
 El proyecto cuenta con una interfaz de consola interactiva amigable construida con `Spectre.Console`.
 
----
+## Video Explicativo
+
+## https://youtu.be/13mFD75ulYY
 
 ## 🛠️ Requisitos Previos e Instalación
 
 Para compilar y ejecutar este proyecto, necesitas tener instalado el **SDK de .NET 10.0** (o superior). A continuación, se detallan los scripts de instalación de acuerdo al sistema operativo:
 
 ### Windows (PowerShell)
+
 Puedes instalarlo usando el gestor de paquetes `winget`:
+
 ```powershell
 winget install Microsoft.DotNet.SDK.10
 ```
 
 ### Linux (Ubuntu / Debian)
+
 ```bash
 sudo apt-get update
 sudo apt-get install -y dotnet-sdk-10.0
 ```
 
 ### macOS (Homebrew)
+
 ```bash
 brew install --cask dotnet-sdk
 ```
@@ -38,12 +44,14 @@ brew install --cask dotnet-sdk
 ## 🚀 Cómo ejecutar la solución
 
 1. Clona este repositorio y accede a la carpeta del código:
+
    ```bash
    git clone <URL_DEL_REPOSITORIO>
    cd PruebaDiagnostica
    ```
 
 2. Restaura las dependencias (como `Spectre.Console`):
+
    ```bash
    dotnet restore
    ```
